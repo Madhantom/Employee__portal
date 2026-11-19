@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ receiver.username }} · Messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/mdm_chat.css' %}">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+</head>
+<body>
+<div class="dashboard mdmchat-shell">
+    {% include "employee_sliderbar.html" %}
+    <div class="mdmchat-room">
+        <div class="mdmchat-room-header">
+            <a href="{% url 'employee_chat_list' %}" class="mdmchat-back">
+                ←
+            </a>
+            <div class="mdmchat-avatar mdmchat-avatar-lg">
+                {{ receiver.username|slice:":2"|upper }}
+            </div>
+            <div class="mdmchat-room-who">
+                <span class="mdmchat-room-name">
+                    {{ receiver.get_full_name|default:receiver.username }}
+                </span>
+                <span class="mdmchat-room-status">
+                    @{{ receiver.username }}
+                </span>
+            </div>
+        </div>
+        <input type="hidden" id="receiver-id" value="{{ receiver.id }}">
+        <div class="mdmchat-room-body" id="messages" data-user-id="{{ request.user.id }}" data-vapid-key="{{ vapid_public_key }}">
+            {% regroup chats by created_at.date as mdmchat_days %}
+            {% for day in mdmchat_days %}
+                <div class="mdmchat-day">
+                    {{ day.grouper|date:"M d, Y" }}
+                </div>
+                {% for chat in day.list %}
+                    {% if chat.sender == request.user %}
+                        <div class="mdmchat-row-msg mine">
+                            <div class="mdmchat-bubble">
+                                {% include "chat_bubble_content.html" with msg=chat %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="mdmchat-row-msg theirs">
+                            <div class="mdmchat-bubble">
+                                {% include "chat_bubble_content.html" with msg=chat %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% empty %}
+                <div class="mdmchat-empty-state">
+                    <p>No messages yet</p>
+                    <span>Start chatting with {{ receiver.username }}</span>
+                </div>
+            {% endfor %}
+        </div>
+        {% csrf_token %}
+
+        <div id="attachment-preview" class="mdmchat-attachment-preview" style="display:none;">
+            <span id="attachment-name"></span>
+            <button type="button" id="attachment-cancel">✕</button>
+        </div>
+
+        <div class="mdmchat-input-bar">
+            <button type="button" id="attach-btn" class="mdmchat-icon-btn" title="Attach file">
+                📎
+            </button>
+            <input type="file" id="file-input" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xlsx,.txt" hidden>
+
+            <button type="button" id="voice-btn" class="mdmchat-icon-btn" title="Record voice">
+                🎤
+            </button>
+
+            <input
+                type="text"
+                id="message-input"
+                class="mdmchat-field"
+                placeholder="Type your message..."
+                autocomplete="off"
+            >
+
+            <button type="button" id="send-btn" class="mdmchat-send">
+                Send
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/chat.js' %}"></script>
+<script>
+const messages = document.getElementById("messages");
+messages.scrollTop = messages.scrollHeight;
+</script>
+</body>
+</html>

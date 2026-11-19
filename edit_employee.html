@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Employee</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+{% include "admin_slidebar.html" %}
+<div class="main">
+<h2>Edit Employee</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Employee ID</label><br>
+    <input type="text" value="{{ employee.employee_id }}" readonly><br><br>
+
+    <label>Username</label><br>
+    <input type="text" name="username" value="{{ employee.user.username }}" required><br><br>
+
+    <label>Department</label><br>
+    <input type="text" name="department" value="{{ employee.department }}" required><br><br>
+
+    <label>Phone</label><br>
+    <input type="text" name="phone" value="{{ employee.phone }}" required><br><br>
+
+    <label>Date of Birth</label>
+    <input type="date" name="date_of_birth" value="{{ employee.date_of_birth|date:'Y-m-d' }}"><br><br>
+
+    <label>Father's Name</label>
+    <input type="text" name="father_name" value="{{ employee.father_name }}"><br><br>
+
+    <label>Native Place</label>
+    <input type="text" name="native_place" value="{{ employee.native_place }}"><br><br>
+
+    <label>Status</label><br>
+    <select name="status">
+        <option value="Active" {% if employee.status == "Active" %}selected{% endif %}>Active</option>
+        <option value="Inactive" {% if employee.status == "Inactive" %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit">Update Employee</button>
+    <a href="{% url 'employee_list' %}">Cancel</a>
+
+</form>
+</div>
+</body>
+</html>

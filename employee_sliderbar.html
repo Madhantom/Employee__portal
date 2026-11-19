@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title> 
+    <style>
+       .notification {
+    background-color: red;
+    color: white;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+
+    <h2>MDM</h2>
+
+    <a href="{% url 'employee_dashboard' request.user.employee.uuid %}"
+       class="{% if active_page == 'dashboard' %}active{% endif %}">
+       🏠 Dashboard
+    </a>
+
+    <a href="{% url 'employee_profile' %}"
+       class="{% if active_page == 'profile' %}active{% endif %}">
+       👤 My Profile
+    </a>
+
+    <a href="{% url 'attendance_list' %}"
+       class="{% if active_page == 'attendance' %}active{% endif %}">
+       🕒 Attendance
+    </a>
+
+    <hr>
+
+    <a href="{% url 'employee_payslip' %}"
+       class="{% if active_page == 'payslip' %}active{% endif %}">
+       💰 Payslips
+    </a>
+
+    <a href="{% url 'apply_leave' %}"
+       class="{% if active_page == 'leave' %}active{% endif %}">
+       📝 Apply Leave
+    </a>
+
+      <a href="{% url 'helpdesk_employee' %}"
+       class="{% if active_page == 'leave' %}active{% endif %}">
+       📞helpdesk
+    </a>
+  <hr>
+ 
+<a href="{% url 'employee_chat_list' %}"
+   id="messages-link"
+   class="{% if active_page == 'messages' %}active{% endif %}">
+   📩 Messages
+   {% if unread_count > 0 %}
+       <span id="unread-badge" class="notification">{{ unread_count }}</span>
+   {% endif %}
+</a>
+
+    <a href="{% url 'employee_holidays' %}"
+       class="{% if active_page == 'holiday' %}active{% endif %}">
+       📅 Holidays
+    </a>
+
+    <a href="{% url 'change_password' %}"
+       class="{% if active_page == 'password' %}active{% endif %}">
+       🔒 Change Password
+    </a>
+<hr>
+    <a href="{% url 'logout' %}">
+       🚪 Logout
+    </a>
+
+</div>
+
+
+
+ 
+</body>
+</html> 

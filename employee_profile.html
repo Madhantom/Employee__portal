@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+    <style>
+        /* ============================================
+           EMPLOYEE PROFILE PAGE — scoped, unique classes
+           Prefix "empprof-" so nothing clashes with other
+           pages sharing employee.css
+           Layout: sidebar | (banner on top, details below)
+           ============================================ */
+
+        .empprof-wrap {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 40px 48px;
+            background: #f4f7fc;
+        }
+
+        .empprof-layout {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ---------- TOP: profile banner ---------- */
+        .empprof-banner {
+            background: linear-gradient(115deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 22px;
+            padding: 36px 44px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            color: #fff;
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.22);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empprof-banner::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.07);
+            top: -120px;
+            right: -60px;
+        }
+
+        .empprof-avatar-ring {
+            position: relative;
+            z-index: 1;
+            width: 118px;
+            height: 118px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.25);
+            overflow: hidden;
+        }
+
+        .empprof-avatar-ring img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            display: block;
+            background: #4a72e0;
+        }
+
+        .empprof-banner-info {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .empprof-banner-info h2 {
+            margin: 0 0 4px;
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+        .empprof-banner-info .empprof-role {
+            margin: 0;
+            font-size: 14px;
+            color: #dce4ff;
+        }
+
+        .empprof-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.18);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .3px;
+            white-space: nowrap;
+        }
+
+        .empprof-status-pill .empprof-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
+        }
+
+        .empprof-back-btn {
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13.5px;
+            white-space: nowrap;
+            transition: .25s;
+        }
+
+        .empprof-back-btn:hover {
+            background: #fff;
+            color: #1d4ed8;
+        }
+
+        /* ---------- BOTTOM: details grid ---------- */
+        .empprof-details-card {
+            background: #fff;
+            border-radius: 22px;
+            padding: 36px 44px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+        }
+
+        .empprof-details-card h3 {
+            margin: 0 0 6px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .empprof-details-card .empprof-sub {
+            margin: 0 0 26px;
+            font-size: 13.5px;
+            color: #94a3b8;
+        }
+
+        .empprof-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .empprof-tile {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            padding: 18px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #eef1f7;
+            transition: .2s;
+        }
+
+        .empprof-tile:hover {
+            border-color: #c7d6fb;
+            background: #f2f6ff;
+        }
+
+        .empprof-tile .empprof-tile-icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            background: #e8edfd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .empprof-tile-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 3px;
+        }
+
+        .empprof-tile-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            word-break: break-word;
+        }
+
+        @media (max-width: 1000px) {
+            .empprof-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 700px) {
+            .empprof-wrap { padding: 24px 18px; }
+            .empprof-banner { flex-direction: column; text-align: center; padding: 30px 24px; }
+            .empprof-banner-info { flex-direction: column; }
+            .empprof-details-card { padding: 26px; }
+            .empprof-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        {% include "employee_sliderbar.html" %}
+
+        <div class="empprof-wrap">
+            <div class="empprof-layout">
+
+                <!-- TOP: profile banner -->
+                <div class="empprof-banner">
+                    <div class="empprof-avatar-ring">
+                        {% if employee.photo %}
+                            <img src="{{ employee.photo.url }}" alt="">
+                        {% else %}
+                            <img src="{% static 'images/default.png' %}" alt="">
+                        {% endif %}
+                    </div>
+
+                    <div class="empprof-banner-info">
+                        <div>
+                            <h2>{{ employee.user.get_full_name|default:employee.user.username }}</h2>
+                            <p class="empprof-role">{{ employee.department }}</p>
+                        </div>
+                        <span class="empprof-status-pill">
+                            <span class="empprof-dot"></span>
+                            {{ employee.status }}
+                        </span>
+                    </div>
+
+                    <a href="{% url 'employee_dashboard' employee.uuid %}" class="empprof-back-btn">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+
+                <!-- BOTTOM: full details -->
+                <div class="empprof-details-card">
+                    <h3>Personal Details</h3>
+                    <p class="empprof-sub">Your profile information on record</p>
+
+                    <div class="empprof-grid">
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">🆔</div>
+                            <div>
+                                <div class="empprof-tile-label">Employee ID</div>
+                                <div class="empprof-tile-value">{{ employee.employee_id }}</div>
+                            </div>
+                        </div>
+
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">📞</div>
+                            <div>
+                                <div class="empprof-tile-label">Phone</div>
+                                <div class="empprof-tile-value">{{ employee.phone }}</div>
+                            </div>
+                        </div>
+
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">📅</div>
+                            <div>
+                                <div class="empprof-tile-label">Joining Date</div>
+                                <div class="empprof-tile-value">{{ employee.joining_date }}</div>
+                            </div>
+                        </div>
+
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">✅</div>
+                            <div>
+                                <div class="empprof-tile-label">Status</div>
+                                <div class="empprof-tile-value">{{ employee.status }}</div>
+                            </div>
+                        </div>
+
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">🎂</div>
+                            <div>
+                                <div class="empprof-tile-label">Date of Birth</div>
+                                <div class="empprof-tile-value">{{ employee.date_of_birth }}</div>
+                            </div>
+                        </div>
+
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">👨</div>
+                            <div>
+                                <div class="empprof-tile-label">Father's Name</div>
+                                <div class="empprof-tile-value">{{ employee.father_name }}</div>
+                            </div>
+                        </div>
+
+                        <div class="empprof-tile">
+                            <div class="empprof-tile-icon">📍</div>
+                            <div>
+                                <div class="empprof-tile-label">Native Place</div>
+                                <div class="empprof-tile-value">{{ employee.native_place }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

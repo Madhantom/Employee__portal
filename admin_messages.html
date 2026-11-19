@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Inbox</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+
+</head>
+
+<body>
+{% include "admin_slidebar.html" %}
+<div class="main">
+<div class="page-container">
+
+<div class="inbox-card">
+
+<div class="top-bar">
+
+<h2>📩 Admin Inbox</h2>
+
+<a href="{% url 'admin_dashboard' %}" class="back-btn">
+
+← Dashboard
+
+</a>
+
+</div>
+
+{% for msg in messages %}
+
+<div class="message-box">
+
+<div class="message-header">
+
+<h3>{{ msg.title }}</h3>
+
+<span>{{ msg.created_at }}</span>
+
+</div>
+
+<p class="sender">
+
+<strong>From:</strong>
+
+{{ msg.sender.username }}
+
+</p>
+
+<p class="message-text">
+
+{{ msg.message }}
+
+</p>
+
+<div class="message-footer">
+
+<a href="{% url 'delete_message' msg.id %}"
+
+class="delete-btn"
+
+onclick="return confirm('Delete this message?')">
+
+🗑 Delete
+
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="empty-box">
+
+<h3>No Messages Available</h3>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+</div>
+</body>
+
+</html>

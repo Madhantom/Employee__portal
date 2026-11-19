@@ -1,0 +1,12 @@
+{% if msg.attachment %}
+    {% if msg.attachment_type == "image" %}
+        <img src="{{ msg.attachment.url }}" class="mdmchat-attach-img" onclick="window.open('{{ msg.attachment.url }}')">
+    {% elif msg.attachment_type == "video" %}
+        <video controls src="{{ msg.attachment.url }}" class="mdmchat-attach-video"></video>
+    {% elif msg.attachment_type == "audio" %}
+        <audio controls src="{{ msg.attachment.url }}" class="mdmchat-attach-audio"></audio>
+    {% else %}
+        <a href="{{ msg.attachment.url }}" target="_blank" class="mdmchat-attach-file">📄 {{ msg.attachment.name|slice:"16:" }}</a>
+    {% endif %}
+{% endif %}
+{% if msg.message %}<div class="mdmchat-text">{{ msg.message }}</div>{% endif %}

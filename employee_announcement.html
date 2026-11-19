@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Announcements | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+</head>
+<body>
+    <div class="dashboard">
+    {% include "employee_sliderbar.html" %}
+
+<div class="announcement-container">
+    <div class="announcement-header">
+        <h2>📢 Company Announcements</h2>
+        <a href="{% url 'employee_dashboard' request.user.employee.uuid %}" class="back-profile-btn">
+            ← Dashboard
+        </a>
+    </div>
+    {% for announcement in announcements %}
+    <div class="announcement-card">
+        <h3>{{ announcement.title }}</h3>
+        <p>{{ announcement.message }}</p>
+        <span class="announcement-date">
+            📅 {{ announcement.created_at }}
+        </span>
+    </div>
+    {% empty %}
+    <div class="no-data">
+        <h3>No Announcements Available</h3>
+    </div>
+    {% endfor %}
+</div>
+</div>
+</body>
+</html>

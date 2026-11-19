@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Details</title>
+</head>
+<body>
+    {% include "admin_slidebar.html" %}
+<div class="main">
+<h2>Employee Details</h2>
+{% if employee.photo %}
+    <img src="{{ employee.photo.url }}" width="150" height="150">
+{% else %}
+    <p>No Profile Photo</p>
+{% endif %}
+<hr>
+<table border="1" cellpadding="10">
+<tr>
+    <th>Employee ID</th>
+    <td>{{ employee.employee_id }}</td>
+</tr>
+<tr>
+    <th>Username</th>
+    <td>{{ employee.user.username }}</td>
+</tr>
+<tr>
+    <th>Department</th>
+    <td>{{ employee.department }}</td>
+</tr>
+<tr>
+    <th>Phone</th>
+    <td>{{ employee.phone }}</td>
+</tr>
+<tr>
+    <th>Joining Date</th>
+    <td>{{ employee.joining_date }}</td>
+</tr>
+<tr>
+    <th>Date of Birth</th>
+    <td>{{ employee.date_of_birth }}</td>
+</tr>
+<tr>
+    <th>Father's Name</th>
+    <td>{{ employee.father_name }}</td>
+</tr>
+<tr>
+    <th>Native Place</th>
+    <td>{{ employee.native_place }}</td>
+</tr>
+<tr>
+    <th>Status</th>
+    <td>{{ employee.status }}</td>
+</tr>
+</table>
+<br>
+<a href="{% url 'employee_list' %}">Back to Employee List</a>
+</div>
+</body>
+</html>
+
+
+
+
+

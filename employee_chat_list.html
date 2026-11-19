@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/mdm_chat.css' %}">
+     <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+
+</head>
+<body>
+   
+<div class="dashboard mdmchat-shell">
+    {% include "employee_sliderbar.html" %}
+
+    <div class="mdmchat-list-wrap">
+
+        <div class="mdmchat-list-head">
+            <h2 class="mdmchat-title">Messages</h2>
+            <div class="mdmchat-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input type="text" id="mdmchatSearch" placeholder="Search employee..." autocomplete="off">
+            </div>
+        </div>
+
+{% for chat in chat_users %}
+<a href="{% url 'employee_chat' chat.user.id %}"
+   class="mdmchat-row"
+   data-user-id="{{ chat.user.id }}"
+   data-name="{{ chat.user.username|lower }}">
+
+    <div class="mdmchat-avatar">{{ chat.user.username|slice:":2"|upper }}</div>
+
+    <div class="mdmchat-row-body">
+        <div class="mdmchat-top">
+            <span class="mdmchat-row-name">{{ chat.user.get_full_name|default:chat.user.username }}</span>
+            {% if chat.last_message %}
+                <span class="mdmchat-row-time">{{ chat.last_message.created_at|date:"H:i" }}</span>
+            {% endif %}
+        </div>
+        <div class="mdmchat-bottom">
+            {% if chat.last_message %}
+                <span class="mdmchat-row-sub">{{ chat.last_message.message|truncatechars:32 }}</span>
+            {% else %}
+                <span class="mdmchat-row-sub muted">Tap to start chatting</span>
+            {% endif %}
+            <span class="notification chat-badge {% if chat.unread_count == 0 %}hidden{% endif %}"
+                  data-user-id="{{ chat.user.id }}">{{ chat.unread_count }}</span>
+        </div>
+    </div>
+</a>
+{% empty %}
+<div class="mdmchat-empty-state"><p>No employees found</p></div>
+{% endfor %}
+</div>
+
+    </div>
+</div>
+</div>
+<script>
+    const mdmchatSearch = document.getElementById('mdmchatSearch');
+    const mdmchatRows = document.querySelectorAll('#mdmchatList .mdmchat-row');
+    mdmchatSearch.addEventListener('input', function () {
+        const q = mdmchatSearch.value.trim().toLowerCase();
+        mdmchatRows.forEach(function (row) {
+            row.style.display = row.dataset.name.includes(q) ? 'flex' : 'none';
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Payslips | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+<div class="dashboard">
+    {% include "employee_sliderbar.html" %}
+    <div class="payslip-page">
+        <div class="payslip-header">
+            <h2>💰 My Payslips</h2>
+            <button onclick="downloadPDF()" class="print-btn">🖨 Download</button>
+        </div>
+
+        <form method="get" class="payslip-filter">
+            <select name="period" onchange="this.form.submit()">
+                <option value="">Select Month</option>
+                {% for m in all_payslips %}
+                <option value="{{ m.month }}|{{ m.year }}" {% if p.month == m.month and p.year == m.year %}selected{% endif %}>
+                    {{ m.month }} {{ m.year }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <div id="content-to-print">
+        {% if p %}
+        <div class="payslip-doc">
+
+            <div class="payslip-doc-header">
+                <div class="company-info">
+                    <h2>MDM Software Solution</h2>
+                    <p>265/2,Pillaiyarpatti,Thirupathur,Sivagangai-630207</p>
+                </div>
+                <div class="payslip-tag">
+                    <span>PAYSLIP</span>
+                    <small>{{ p.month }} {{ p.year }}</small>
+                </div>
+            </div>
+
+            <div class="payslip-meta">
+                <div class="meta-col">
+                    <div class="meta-row"><span>Employee ID</span><b>{{ p.employee.employee_id }}</b></div>
+                </div>
+                <div class="meta-col">
+                    <div class="meta-row"><span>Pay Period</span><b>{{ p.month }} {{ p.year }}</b></div>
+                </div>
+            </div>
+
+            <div class="payslip-breakdown">
+                <div class="breakdown-col">
+                    <table>
+                        <thead>
+                            <tr><th>Earnings</th><th>Amount</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Basic Salary</td><td>₹ {{ p.basic_salary }}</td></tr>
+                            <tr><td>Allowance</td><td>₹ {{ p.allowance }}</td></tr>
+                        </tbody>
+                        <tfoot>
+                            <tr><td>Total Earnings</td><td>₹ {{ p.basic_salary|add:p.allowance }}</td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="breakdown-col">
+                    <table>
+                        <thead>
+                            <tr><th>Deductions</th><th>Amount</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Deduction</td><td>₹ {{ p.deduction }}</td></tr>
+                        </tbody>
+                        <tfoot>
+                            <tr><td>Total Deductions</td><td>₹ {{ p.deduction }}</td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="payslip-netpay">
+                <div class="netpay-amount">₹ {{ p.net_salary }}</div>
+                <div class="netpay-label">Net Pay</div>
+            </div>
+
+            <div class="payslip-footer">
+                <div class="sign-block">
+                    <div class="sign-line"></div>
+                    <span>Employer Signature</span>
+                </div>
+                <div class="sign-block">
+                    <div class="sign-line"></div>
+                    <span>Employee Signature</span>
+                </div>
+            </div>
+
+            <p class="payslip-note">This is a system generated payslip and does not require a physical signature.</p>
+        </div>
+        {% else %}
+        <div class="payslip-doc">
+            <p class="payslip-note">No payslips available yet.</p>
+        </div>
+        {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+function downloadPDF() {
+  const element = document.getElementById('content-to-print');
+  const opt = {
+    margin: 0.5,
+    filename: '{{ p.month }}_{{ p.year }}_payslip.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave History | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+</head>
+<body>
+    <div class="dashboard">
+    {% include "employee_sliderbar.html" %}
+<div class="leave-history-page">
+    <div class="leave-history-header">
+        <a href="{% url 'employee_dashboard' request.user.employee.uuid %}" class="back-btn">
+            ← Dashboard
+        </a>
+        <h2>📋 My Leave History</h2>
+        <a href="{% url 'apply_leave' %}" class="history-btn">
+            📝 Apply Leave
+        </a>
+    </div>
+    <div class="leave-history-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for leave in leaves %}
+                <tr>
+                    <td>{{ leave.from_date }}</td>
+                    <td>{{ leave.to_date }}</td>
+                    <td>{{ leave.reason }}</td>
+                    <td>
+                        {% if leave.status == "Approved" %}
+                            <span class="approved">Approved</span>
+                        {% elif leave.status == "Rejected" %}
+                            <span class="rejected">Rejected</span>
+                        {% else %}
+                            <span class="pending">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="empty-row">
+                        No Leave Records Found
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</body>
+</html>

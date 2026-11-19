@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+</head>
+<body>
+<div class="dashboard">
+    {% include "employee_sliderbar.html" %}
+    <div class="main-content">         
+        <div class="topbar">
+
+            <div class="topbar-left"> 
+                <h1>Welcome back, {{ employee.user.first_name|default:employee.user.username }} <span class="wave"></span></h1>
+                <p>Here's what's happening in your workspace today</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" placeholder="Search by employee name">
+                </div>
+
+                <a href="{% url 'employee_profile' %}" class="profile-chip">
+                    {% if employee.photo %}
+                        <img src="{{ employee.photo.url }}" alt="{{ employee.user.username }}">
+                    {% else %}
+                        <div class="avatar-fallback">{{ employee.user.username|first|upper }}</div>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+
+        <div class="stat-strip">
+            <div class="stat-pill">
+                <div class="stat-icon leave">🌿</div>
+                <div>
+                    <span class="stat-value">{{ employee.casual_leave }}</span>
+                    <span class="stat-label">Casual Leave Left</span>
+                </div>
+            </div>
+            <div class="stat-pill">
+                <div class="stat-icon medical">➕</div>
+                <div>
+                    <span class="stat-value">{{ employee.medical_leave }}</span>
+                    <span class="stat-label">Medical Leave Left</span>
+                </div>
+            </div>
+            <div class="stat-pill">
+                <div class="stat-icon dept">🏢</div>
+                <div>
+                    <span class="stat-value">{{ employee.department }}</span>
+                    <span class="stat-label">Department</span>
+                </div>
+            </div>
+            <div class="stat-pill">
+                <div class="stat-icon status {% if employee.status == 'Active' %}active{% else %}inactive{% endif %}">●</div>
+                <div>
+                    <span class="stat-value">{{ employee.status }}</span>
+                    <span class="stat-label">Status</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="grid-top">
+            <div class="panel wide">
+                <div class="panel-head">
+                    <h3>Announcements</h3> 
+                </div>
+                {% if announcements %}
+                    <ul class="announcement-list">
+                        {% for note in announcements %}
+                        <li>
+                            <span class="dot-marker"></span>
+                            <div>
+                                <p>{{ note.title }}</p>
+                                <span class="muted-sm">{{ note.created_at|date:"d M Y" }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-illustration">🗂️</div>
+                        <p>No announcements yet</p>
+                        <span>Check back later for updates and company news</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="panel-stack">
+                <div class="panel accent-blue">
+                    <div class="panel-head">
+                        <h3>Last Leave Status</h3>
+                        <a href="{% url 'apply_leave' %}" class="panel-arrow">→</a>
+                    </div>
+                    {% if last_leave %}
+                        <div class="leave-row">
+                            <span class="badge {% if last_leave.status == 'Approved' %}badge-success{% elif last_leave.status == 'Rejected' %}badge-danger{% else %}badge-pending{% endif %}">
+                                {{ last_leave.status }}
+                            </span>
+                        </div>
+                        <p class="leave-type">{{ last_leave.leave_type }} &nbsp;|&nbsp; {{ last_leave.date|date:"d-m-Y" }}</p>
+                    {% else %}
+                        <p class="muted">No leave requests yet</p>
+                    {% endif %}
+                </div>
+
+                <div class="panel accent-amber">
+                    <div class="panel-head">
+                        <h3>Upcoming Holiday</h3>
+                        <a href="{% url 'employee_holidays' %}" class="panel-arrow">→</a>
+                    </div>
+                    {% if next_holiday %}
+                        <p class="holiday-date">{{ next_holiday.date|date:"d M Y" }}</p>
+                        <p class="muted-sm">{{ next_holiday.date|date:"l" }}</p>
+                        <p class="holiday-name">{{ next_holiday.name }}</p>
+                    {% else %}
+                        <p class="muted">No upcoming holidays listed</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="panel events-panel">
+                <div class="panel-head">
+                    <h3>Upcoming Events</h3>
+                </div>
+                {% if upcoming_events %}
+                    <ul class="event-list">
+                        {% for event in upcoming_events %}
+                        <li>
+                            <div class="event-date">
+                                <span class="event-day">{{ event.date|date:"d" }}</span>
+                                <span class="event-month">{{ event.date|date:"M" }}</span>
+                            </div>
+                            <div class="event-info">
+                                <p><strong>{{ event.title }}</strong></p>
+                                <p>{{event.description}}</p>
+                                <span class="muted-sm">{{ event.date|date:"l,d M Y" }}</span>
+                            </div>
+                            
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-illustration">📌</div>
+                        <p>No events available</p>
+                        <span>Check back later for upcoming events</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="quick-access">
+            <h3 class="section-title">Quick Access</h3>
+            <div class="cards">
+                <a href="{% url 'employee_profile' %}" class="card">
+                    <div class="icon icon-profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <h3>My Profile</h3>
+                    <p>View personal details</p>
+                </a>
+                <a href="{% url 'attendance_list' %}" class="card">
+                    <div class="icon icon-attendance">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>
+                    </div>
+                    <h3>Attendance</h3>
+                    <p>View attendance</p>
+                </a>
+               
+                <a href="{% url 'apply_leave' %}" class="card">
+                    <div class="icon icon-leave">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                    </div>
+                    <h3>Apply Leave</h3>
+                    <p>Leave request</p>
+                </a>
+             
+                <a href="{% url 'employee_announcements' %}" class="card">
+                    <div class="icon icon-announcements">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 0 1-5.8-1.6"></path></svg>
+                    </div>
+                    <h3>Announcements</h3>
+                    <p>Company news</p>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
+
+

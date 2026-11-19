@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leave Requests</title>
+</head>
+<body>
+    {% include "admin_slidebar.html" %}
+<div class="main">
+<h2>Employee Leave Requests</h2>
+<table border="1" cellpadding="10">
+<tr>
+    <th>Employee ID</th>
+    <th>Name</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Reason</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+{% for leave in leaves %}
+<tr>
+<td>{{ leave.employee.employee_id }}</td>
+<td>{{ leave.employee.user.username }}</td>
+<td>{{ leave.from_date }}</td>
+<td>{{ leave.to_date }}</td>
+<td>{{ leave.reason }}</td>
+<td>{{ leave.status }}</td>
+<td>
+{% if leave.status == "Pending" %}
+<a href="{% url 'approve_leave' leave.id %}">Approve</a>
+|
+<a href="{% url 'reject_leave' leave.id %}">Reject</a>
+{% else %}
+{{ leave.status }}
+{% endif %}
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="7">No Leave Requests</td>
+</tr>
+{% endfor %}
+</table>
+<br>
+<a href="{% url 'admin_dashboard' %}">Back</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,442 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Attendance | MDM</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+    <style>
+        /* ============================================
+           ATTENDANCE PAGE — scoped, unique classes
+           Prefix "empatt-" so nothing clashes with other
+           pages sharing employee.css
+           Full width: Today card on top, history below
+           ============================================ */
+
+        .empatt-wrap {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 40px 48px;
+            width: 100%;
+        }
+
+        .empatt-layout {
+            width: 100%;
+        }
+
+        /* ---------- Header ---------- */
+        .empatt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .empatt-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .empatt-title-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #e8edfd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .empatt-title h2 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 700;
+            color: #1c2340;
+        }
+
+        .empatt-title p {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .empatt-checkout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            text-decoration: none;
+            padding: 13px 22px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 10px 22px rgba(220, 38, 38, 0.28);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .empatt-checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(220, 38, 38, 0.34);
+        }
+
+        /* ---------- TODAY card ---------- */
+        .empatt-today {
+            background: linear-gradient(115deg, #2c3e8c 0%, #2563eb 100%);
+            border-radius: 22px;
+            padding: 32px 40px;
+            margin-bottom: 24px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.22);
+        }
+
+        .empatt-today::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.07);
+            top: -130px;
+            right: -50px;
+        }
+
+        .empatt-today-label {
+            position: relative;
+            z-index: 1;
+        }
+
+        .empatt-today-label span {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #cdd6ff;
+            margin-bottom: 6px;
+        }
+
+        .empatt-today-label h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .empatt-today-stats {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .empatt-today-stat {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 16px 26px;
+            min-width: 150px;
+            backdrop-filter: blur(4px);
+        }
+
+        .empatt-today-stat-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: #cdd6ff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .empatt-today-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .empatt-today-stat-value.dim {
+            color: #b9c3f5;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .empatt-today-badge {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.16);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            align-self: flex-start;
+        }
+
+        .empatt-today-badge .empatt-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
+        }
+
+        /* ---------- Table card ---------- */
+        .empatt-table-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .empatt-table-card-header {
+            padding: 22px 28px 4px;
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #1c2340;
+        }
+
+        .empatt-table-scroll {
+            overflow-x: auto;
+        }
+
+        .empatt-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+        }
+
+        .empatt-table thead th {
+            background: linear-gradient(135deg, #2c3e8c, #2563eb);
+            color: #fff;
+            text-align: left;
+            padding: 16px 28px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+        }
+
+        .empatt-table tbody tr {
+            border-bottom: 1px solid #f0f2f8;
+            transition: background .15s;
+        }
+
+        .empatt-table tbody tr:last-child { border-bottom: none; }
+
+        .empatt-table tbody tr:hover {
+            background: #f8faff;
+        }
+
+        .empatt-table tbody tr:nth-child(even) {
+            background: #fbfcff;
+        }
+
+        .empatt-table tbody tr:nth-child(even):hover {
+            background: #f4f7ff;
+        }
+
+        .empatt-table td {
+            padding: 16px 28px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .empatt-date-cell {
+            font-weight: 600;
+            color: #1c2340;
+        }
+
+        .empatt-time-cell {
+            color: #64748b;
+        }
+
+        .empatt-time-cell.dash {
+            color: #cbd5e1;
+        }
+
+        /* status badges */
+        .empatt-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .empatt-status::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .empatt-status.present {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .empatt-status.present::before { background: #22c55e; }
+
+        .empatt-status.absent {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .empatt-status.absent::before { background: #ef4444; }
+
+        .empatt-status.other {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .empatt-status.other::before { background: #94a3b8; }
+
+        .empatt-empty-row {
+            text-align: center;
+            padding: 60px 20px !important;
+            color: #94a3b8;
+            font-size: 14.5px;
+        }
+
+        .empatt-empty-row .empatt-empty-icon {
+            font-size: 34px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 700px) {
+            .empatt-wrap { padding: 24px 18px; }
+            .empatt-today { padding: 26px 24px; }
+            .empatt-checkout-btn { width: 100%; justify-content: center; }
+            .empatt-today-stats { width: 100%; }
+            .empatt-today-stat { flex: 1; min-width: 130px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        {% include "employee_sliderbar.html" %}
+
+        <div class="empatt-wrap">
+            <div class="empatt-layout">
+
+                <div class="empatt-header">
+                    <div class="empatt-title">
+                        <div class="empatt-title-icon">🕒</div>
+                        <div>
+                            <h2>My Attendance</h2>
+                            <p>Your recent check-in &amp; check-out history</p>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'logout' %}" class="empatt-checkout-btn">
+                        🚪 Check Out
+                    </a>
+                </div>
+
+                <!-- TODAY / CURRENT ATTENDANCE -->
+                {% with today=attendance.0 %}
+                {% if today %}
+                <div class="empatt-today">
+                    <div class="empatt-today-label">
+                        <span>Today · {{ today.date }}</span>
+                        <h3>Your Attendance Today</h3>
+                    </div>
+
+                    <div class="empatt-today-stats">
+                        <div class="empatt-today-stat">
+                            <div class="empatt-today-stat-label">⏱ Check In</div>
+                            <div class="empatt-today-stat-value">{{ today.check_in|time:"g:i A" }}</div>
+                        </div>
+                        <div class="empatt-today-stat">
+                            <div class="empatt-today-stat-label">⏱ Check Out</div>
+                            {% if today.check_out %}
+                                <div class="empatt-today-stat-value">{{ today.check_out|time:"g:i A" }}</div>
+                            {% else %}
+                                <div class="empatt-today-stat-value dim">Not checked out yet</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <span class="empatt-today-badge">
+                        <span class="empatt-dot"></span>
+                        {{ today.status }}
+                    </span>
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <!-- FULL HISTORY -->
+                <div class="empatt-table-card">
+                    <div class="empatt-table-card-header">Attendance History</div>
+                    <div class="empatt-table-scroll">
+                        <table class="empatt-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for a in attendance %}
+                                <tr>
+                                    <td class="empatt-date-cell">{{ a.date }}</td>
+                                    <td class="empatt-time-cell">{{ a.check_in|time:"g:i A" }}</td>
+                                    <td class="empatt-time-cell{% if not a.check_out %} dash{% endif %}">
+                                        {% if a.check_out %}
+                                            {{ a.check_out|time:"g:i A" }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if a.status == "Present" %}
+                                            <span class="empatt-status present">Present</span>
+                                        {% elif a.status == "Absent" %}
+                                            <span class="empatt-status absent">Absent</span>
+                                        {% else %}
+                                            <span class="empatt-status other">{{ a.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="empatt-empty-row">
+                                        <span class="empatt-empty-icon">🗓️</span>
+                                        No Attendance Found
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

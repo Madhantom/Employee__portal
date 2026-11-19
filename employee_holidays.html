@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Holidays | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+</head>
+<body>
+    <div class="dashboard">
+    {% include "employee_sliderbar.html" %}
+
+<div class="holiday-page">
+    <div class="holiday-top">
+        <h2>📅 Company Holidays</h2>
+        <a href="{% url 'employee_dashboard' request.user.employee.uuid %}" class="back-profile-btn">
+            ← Dashboard
+        </a>
+    </div>
+    <div class="holiday-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Holiday</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for holiday in holidays %}
+                <tr>
+                    <td>{{ holiday.title }}</td>
+                    <td>{{ holiday.date }}</td>
+                    <td>{{ holiday.description }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="empty-row">
+                        No holidays available.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</body>
+</html>

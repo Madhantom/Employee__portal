@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply Message | MDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+</head>
+<body>
+    <div class="dashboard">
+    {% include "employee_sliderbar.html" %}
+
+
+<div class="reply-page">
+    <div class="reply-header">
+        <a href="{% url 'employee_messages' %}" class="back-btn">
+            ← My Messages
+        </a>
+        <h2>💬 Reply Message</h2>
+    </div>
+    <div class="reply-card">
+        <div class="original-message">
+            <h3>{{ parent.title }}</h3>
+            <p>{{ parent.message }}</p>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Your Reply</label>
+                <textarea
+                    name="message"
+                    rows="6"
+                    placeholder="Type your reply here..."
+                    required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">
+                📩 Send Reply
+            </button>
+        </form>
+    </div>
+</div>
+</div>
+</body>
+</html>

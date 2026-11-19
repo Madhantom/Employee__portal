@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk | MDM</title>
+
+    <link rel="stylesheet" href="{% static 'css/employee.css' %}">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+{% include "employee_sliderbar.html" %}
+
+<div class="main-content">
+
+<div class="page-header">
+
+<h2><i class="fa-solid fa-headset"></i> Help Desk</h2>
+
+<p>Raise & Track Your Concerns Privately</p>
+
+</div>
+
+<div class="helpdesk-card">
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="form-group">
+
+<label>Category</label>
+
+{{ form.category }}
+
+</div>
+
+<div class="form-group">
+
+<label>Priority</label>
+
+{{ form.priority }}
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Attachment</label>
+
+{{ form.attachment }}
+
+</div>
+
+<div class="form-group">
+
+<label>Description</label>
+
+{{ form.description }}
+
+</div>
+
+<button type="submit" class="submit-btn">
+
+<i class="fa-solid fa-paper-plane"></i>
+
+Submit Complaint
+
+</button>
+
+</form>
+
+</div>
+
+<h3 style="margin-top:40px;">
+    <i class="fa-solid fa-list"></i> My Complaints
+</h3>
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Reply</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for complaint in complaints %}
+
+        <tr>
+
+            <td>{{ complaint.get_category_display }}</td>
+
+            <td>{{ complaint.get_priority_display }}</td>
+
+            <td>
+
+                {% if complaint.status == "OPEN" %}
+                    <span class="badge bg-warning">Open</span>
+
+                {% elif complaint.status == "IN_PROGRESS" %}
+                    <span class="badge bg-primary">In Progress</span>
+
+                {% elif complaint.status == "RESOLVED" %}
+                    <span class="badge bg-success">Resolved</span>
+
+                {% else %}
+                    <span class="badge bg-dark">Closed</span>
+
+                {% endif %}
+
+            </td>
+
+            <td>{{ complaint.created_at|date:"d M Y" }}</td>
+
+            <td>
+
+                {% if complaint.admin_reply %}
+                    {{ complaint.admin_reply }}
+                {% else %}
+                    <span style="color:gray;">Waiting for reply</span>
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+    {% empty %}
+
+        <tr>
+
+            <td colspan="5" style="text-align:center;">
+                No complaints submitted.
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
